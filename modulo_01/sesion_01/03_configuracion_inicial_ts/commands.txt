@@ -1,0 +1,4 @@
+mkdir backend-app && cd backend-app
+npm init -y
+npm install typescript ts-node-dev @types/node --save-dev
+npx tsc --init
