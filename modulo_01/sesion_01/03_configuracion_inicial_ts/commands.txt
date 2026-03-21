@@ -2,3 +2,17 @@ mkdir backend-app && cd backend-app
 npm init -y
 npm install typescript ts-node-dev @types/node --save-dev
 npx tsc --init
+
+"scripts": {
+  "dev": "ts-node-dev src/index.ts",
+  "build": "tsc",
+  "start": "node dist/index.js"
+}
+
+
+import express from 'express';
+
+const app = express();
+app.get('/', (req, res) => res.send('Hola desde TypeScript'));
+
+app.listen(3000, () => console.log('Servidor iniciado en http://localhost:3000'));
