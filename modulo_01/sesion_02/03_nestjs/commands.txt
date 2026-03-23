@@ -1,0 +1,8 @@
+# Instalación de NestJS
+npm install -g @nestjs/cli
+
+# Crear un proyecto
+nest new nest-demo
+
+# Crear una entidad user
+nest g resource users
