@@ -10,5 +10,5 @@ app.use(express.json());
 
 app.use("/api", router);
 
-app.listen(process.env.PORT, () => console.log(`Servidor iniciado en ${process.env.PORT}`));
+app.listen(process.env.PORT, () => console.log(`Servidor iniciado en ${process.env.API_URL}`));
 // app.listen(env.PORT, () => console.log(`Servidor iniciado en ${env.API_URL}`));

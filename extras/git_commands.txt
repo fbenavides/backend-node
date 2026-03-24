@@ -1,0 +1,21 @@
+git config --global user.name "Tu Nombre"
+git config --global user.email "tu@email.com"
+
+git init                     # Inicializa un repositorio
+git clone <url>              # Clona un repositorio remoto
+
+git status                   # Muestra el estado actual
+git add .                    # Agrega todos los cambios
+git add archivo.txt          # Agrega un archivo específico
+
+git commit -m "mensaje"      # Guarda cambios con mensaje
+
+git branch                   # Lista ramas
+git checkout nombre-rama     # Cambia de rama
+git checkout -b nueva-rama   # Crea y cambia en un paso
+
+git remote add origin <url>  # Conecta repo remoto
+git push -u origin main      # Sube cambios
+git pull                     # Trae cambios del remoto
+
+.gitignore                   # Lista de archivos ignorados
