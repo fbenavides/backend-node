@@ -1,0 +1,27 @@
+{
+  "name": "event_loop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "01": "node dist/ejemplo_01.js",
+    "02": "node dist/ejemplo_02.js",
+    "03": "node dist/ejemplo_03.js",
+    "04": "node dist/ejemplo_04.js",
+    "05": "node dist/ejemplo_05.js",
+    "06": "node dist/ejemplo_06.js",
+    "07": "node dist/ejemplo_07.js",
+    "08": "node dist/ejemplo_08.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.0.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+  }
+}

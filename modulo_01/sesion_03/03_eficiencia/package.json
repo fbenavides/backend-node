@@ -1,0 +1,21 @@
+{
+  "name": "promise_all",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "01": "node dist/ejemplo_01_secuencial.js",
+    "02": "node dist/ejemplo_02_optimo.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.0.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+  }
+}
