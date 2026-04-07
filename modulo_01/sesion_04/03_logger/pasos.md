@@ -93,12 +93,6 @@ const logger = winston.createLogger({
 });
 ```
 
-## Agregar timestamp
-
-```ts
-
-```
-
 ## Agregar formatter
 
 ```ts
@@ -140,6 +134,8 @@ const logger = winston.createLogger({
 });
 ```
 
+---
+
 ## Cambiar ts-node por tsx
 
 ```
@@ -153,6 +149,8 @@ pnpm add -D tsx
     "dev": "npx nodemon --watch src --ext ts --exec \"tsx src/main.ts\""
   },
 ```
+
+---
 
 ## Instalación y configuración de ESLint y Prettier
 

@@ -67,6 +67,8 @@ app.listen(3000, () => {
 });
 ```
 
+---
+
 ## Instalar ts-node
 
 ```
@@ -87,6 +89,8 @@ en lugar de
 tsc
 node dist/main.js
 ```
+
+---
 
 ## Instalar nodemon
 
