@@ -15,6 +15,7 @@ export class UserController {
   findOne(@Param('id') id: string) {
     return this.userService.findOne(+id);
     // return this.userService.findOneLazy(+id);
+    // return this.userService.findOneSql(+id);
   }
 
   @Post()

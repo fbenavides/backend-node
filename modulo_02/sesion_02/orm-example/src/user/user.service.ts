@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private repo: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) 
+    private repo: Repository<User>,
+    private readonly dataSource: DataSource,
+  ) {}
 
   findAll() {
     return this.repo.find({ relations: ['orders'] });
@@ -33,6 +38,21 @@ export class UserService {
         id: order.id,
       })),
     };
+  }
+
+  async findOneSql(id: number) {
+    const rows = await this.dataSource.query(
+      `
+        SELECT
+          u.id,
+          u.name
+        FROM user u  
+        WHERE u.id = ?
+      `,
+      [id],
+    );
+
+    return rows[0];
   }
 
   async create(data: CreateUserDto) {
