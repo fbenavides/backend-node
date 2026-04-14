@@ -24,7 +24,7 @@ import { Product } from './product/product.entity';
     }),
     OrderModule,
     ProductModule,
-    UserModule
-  ]
+    UserModule,
+  ],
 })
 export class AppModule {}
