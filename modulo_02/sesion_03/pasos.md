@@ -89,7 +89,8 @@ export class Category {
 Vamos a probar distintos queryes asi que creemos en order controller
 
 ```ts
-  @Get('test-query-builder') {
+  @Get('test-query-builder')
+  testQueryBuilder() {
     return this.orderService.testQueryBuilder();
   }
 ```
@@ -248,6 +249,12 @@ En este caso user.service.ts
 import { Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+
+...
+
+  constructor(
+    @InjectRepository(User) private repo: Repository<User>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,) {}
 
 ...
 
