@@ -22,7 +22,7 @@ export const useAuth = defineStore('auth', () => {
 			.sign(secret)
 
 		token.value = jwt // <-- formato header.payload.signature firmado con HS256
-		// console.log('JWT:', jwt)
+		console.log('JWT:', jwt)
 	}
 
 	function logout() {

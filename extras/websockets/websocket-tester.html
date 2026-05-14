@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Socket.IO Debug Client</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: Inter, Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #1e293b;
+      background: #111827;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      border-right: 1px solid #1e293b;
+      padding: 20px;
+      overflow-y: auto;
+      background: #0f172a;
+    }
+
+    .viewer {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .logs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      font-family: monospace;
+      background: #020617;
+    }
+
+    .log {
+      margin-bottom: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #111827;
+      border: 1px solid #1e293b;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .incoming {
+      border-left: 4px solid #22c55e;
+    }
+
+    .outgoing {
+      border-left: 4px solid #3b82f6;
+    }
+
+    .system {
+      border-left: 4px solid #f59e0b;
+    }
+
+    .time {
+      color: #94a3b8;
+      font-size: 11px;
+      margin-bottom: 6px;
+    }
+
+    .event {
+      color: #38bdf8;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      border: 1px solid #334155;
+      background: #111827;
+      color: white;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 16px;
+      font-family: monospace;
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-bottom: 10px;
+      transition: 0.2s;
+    }
+
+    .connect-btn {
+      background: #22c55e;
+      color: black;
+    }
+
+    .disconnect-btn {
+      background: #ef4444;
+      color: white;
+    }
+
+    .emit-btn {
+      background: #3b82f6;
+      color: white;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .connected {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+    }
+
+    .disconnected {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🔥 Socket.IO Debug Client</h1>
+</header>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div id="status" class="status disconnected">
+      🔴 Desconectado
+    </div>
+
+    <label>Socket URL</label>
+    <input
+      id="url"
+      value="http://localhost:3000"
+      placeholder="http://localhost:3000"
+    />
+
+    <label>Bearer Token (opcional)</label>
+    <textarea
+      id="token"
+      placeholder="JWT token..."
+    ></textarea>
+
+    <button class="connect-btn" onclick="connectSocket()">
+      Conectar
+    </button>
+
+    <button class="disconnect-btn" onclick="disconnectSocket()">
+      Desconectar
+    </button>
+
+    <hr style="margin: 24px 0; border-color: #1e293b;" />
+
+    <label>Evento a emitir</label>
+    <input
+      id="event"
+      placeholder="chat_message"
+    />
+
+    <label>Payload JSON</label>
+    <textarea id="payload">
+{
+  "message": "Hola mundo"
+}
+    </textarea>
+
+    <button class="emit-btn" onclick="emitEvent()">
+      Emitir Evento
+    </button>
+
+  </div>
+
+  <!-- LOGS -->
+  <div class="viewer">
+
+    <div class="logs" id="logs"></div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+
+<script>
+  let socket = null;
+
+  const logsEl = document.getElementById('logs');
+  const statusEl = document.getElementById('status');
+
+  function now() {
+    return new Date().toLocaleTimeString();
+  }
+
+  function addLog(type, event, data) {
+    const div = document.createElement('div');
+
+    div.className = `log ${type}`;
+
+    div.innerHTML = `
+      <div class="time">${now()}</div>
+      <div class="event">${event}</div>
+      <div>${escapeHtml(JSON.stringify(data, null, 2))}</div>
+    `;
+
+    logsEl.prepend(div);
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;');
+  }
+
+  function setConnected(connected) {
+    if (connected) {
+      statusEl.className = 'status connected';
+      statusEl.innerHTML = '🟢 Conectado';
+    } else {
+      statusEl.className = 'status disconnected';
+      statusEl.innerHTML = '🔴 Desconectado';
+    }
+  }
+
+  function connectSocket() {
+    try {
+      if (socket) {
+        socket.disconnect();
+      }
+
+      const url = document.getElementById('url').value.trim();
+      const token = document.getElementById('token').value.trim();
+
+      socket = io(url, {
+        auth: token
+          ? {
+              token
+            }
+          : undefined
+      });
+
+      socket.on('connect', () => {
+        setConnected(true);
+
+        addLog(
+          'system',
+          'socket:connect',
+          {
+            socketId: socket.id
+          }
+        );
+      });
+
+      socket.on('disconnect', (reason) => {
+        setConnected(false);
+
+        addLog(
+          'system',
+          'socket:disconnect',
+          {
+            reason
+          }
+        );
+      });
+
+      socket.on('connect_error', (err) => {
+        addLog(
+          'system',
+          'socket:error',
+          {
+            message: err.message
+          }
+        );
+      });
+
+      // Escuchar TODOS los eventos
+      socket.onAny((event, ...args) => {
+        addLog(
+          'incoming',
+          `⬅️ ${event}`,
+          args
+        );
+      });
+
+    } catch (err) {
+      addLog(
+        'system',
+        'client:error',
+        {
+          error: err.message
+        }
+      );
+    }
+  }
+
+  function disconnectSocket() {
+    if (!socket) return;
+
+    socket.disconnect();
+
+    addLog(
+      'system',
+      'manual:disconnect',
+      {}
+    );
+  }
+
+  function emitEvent() {
+    if (!socket) {
+      alert('No conectado');
+      return;
+    }
+
+    const event = document.getElementById('event').value.trim();
+
+    if (!event) {
+      alert('Pon un evento');
+      return;
+    }
+
+    let payload = {};
+
+    try {
+      payload = JSON.parse(
+        document.getElementById('payload').value || '{}'
+      );
+    } catch (err) {
+      alert('JSON inválido');
+      return;
+    }
+
+    addLog(
+      'outgoing',
+      `➡️ ${event}`,
+      payload
+    );
+
+    socket.emit(event, payload, (ack) => {
+      addLog(
+        'system',
+        `✅ ACK ${event}`,
+        ack
+      );
+    });
+  }
+</script>
+
+</body>
+</html>
